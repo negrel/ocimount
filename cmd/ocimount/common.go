@@ -3,11 +3,9 @@ package ocimount
 import (
 	"errors"
 	"io/fs"
-	"os"
 	"strings"
 
 	"github.com/containers/storage"
-	"github.com/containers/storage/pkg/unshare"
 	"github.com/containers/storage/types"
 	"github.com/docker/distribution/reference"
 	"github.com/sirupsen/logrus"
@@ -35,7 +33,7 @@ func containersStore() (storage.Store, error) {
 	store, err := storage.GetStore(storeOptions)
 	if err != nil {
 		if errors.Is(err, fs.ErrPermission) {
-			logrus.Info("failed to get store, trying again in unshare mode")
+			logrus.Info("failed to get store, trying again in unshare mode.")
 
 		}
 	}
