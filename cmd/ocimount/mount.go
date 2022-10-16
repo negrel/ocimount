@@ -26,7 +26,8 @@ var mountCmd = &cobra.Command{
 		var mountpoint string
 		mountpoint, err = mount(args[0])
 		if err != nil {
-			return
+			logrus.Errorf("failed to mount %q: %v", args[0], err)
+			return nil
 		}
 		fmt.Println(mountpoint)
 
@@ -52,7 +53,7 @@ func mount(imgRefStr string) (mountpoint string, err error) {
 		if merr != nil {
 			logrus.Warnf("failed to check how many times %q is mounted: %v", imgRef, err)
 		}
-		logrus.Debugf("image already mounted %v time(s)", nbMount)
+		logrus.Debugf("image already mounted %v time(s).", nbMount)
 	}
 
 	mountpoint, err = store.MountImage(imgRef.String(), []string{}, "")

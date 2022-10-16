@@ -19,7 +19,7 @@ func init() {
 var umountCmd = &cobra.Command{
 	Use:   "umount",
 	Short: "Unmount an OCI/Docker image.",
-	RunE: func(cmd *cobra.Command, args []string) (err error) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 1 {
 			return errors.New("expecting exactly one argument: an OCI/Docker image reference")
 		}
@@ -27,10 +27,15 @@ var umountCmd = &cobra.Command{
 		flags := cmd.Flags()
 		force, err := flags.GetBool("force")
 		if err != nil {
-			return
+			panic("force flag not found")
 		}
 
-		return umount(args[0], force)
+		if err := umount(args[0], force); err != nil {
+			logrus.Error("failed to unmount %q: %v", args[0], err)
+			return nil
+		}
+
+		return nil
 	},
 }
 
