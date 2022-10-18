@@ -7,6 +7,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func init() {
+	pflag := rootCmd.PersistentFlags()
+	setupStoreOptionsFlags(pflag)
+	setupLogrusFlags(pflag)
+}
+
 var rootCmd = &cobra.Command{}
 
 func Execute() {

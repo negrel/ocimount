@@ -45,7 +45,7 @@ func runUnshare(args []string) error {
 			return errors.New("no command specified and no $SHELL specified")
 		}
 
-		logrus.Debug("$SHELL detected:", shell)
+		logrus.Debug("$SHELL detected: ", shell)
 		args = []string{shell}
 	}
 
