@@ -2,7 +2,10 @@ package ocimount
 
 import (
 	"errors"
+	"os"
 
+	"github.com/containers/image/v5/docker/reference"
+	"github.com/containers/storage"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -19,44 +22,46 @@ func init() {
 var umountCmd = &cobra.Command{
 	Use:   "umount",
 	Short: "Unmount an OCI/Docker image.",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		if len(args) != 1 {
-			return errors.New("expecting exactly one argument: an OCI/Docker image reference")
-		}
-
-		flags := cmd.Flags()
-		force, err := flags.GetBool("force")
-		if err != nil {
-			panic("force flag not found")
-		}
-
-		if err := umount(args[0], force); err != nil {
-			logrus.Error("failed to unmount %q: %v", args[0], err)
-			return nil
-		}
-
-		return nil
-	},
+	RunE:  runUmount,
 }
 
-func umount(imgRefStr string, force bool) (err error) {
-	logrus.Debugf("unmounting %q...", imgRefStr)
+func runUmount(cmd *cobra.Command, args []string) (err error) {
+	// validating args
+	if len(args) != 1 {
+		return errors.New("expecting exactly one argument: an OCI/Docker image reference")
+	}
 
+	// getting flags
+	flags := cmd.Flags()
+	force, err := flags.GetBool("force")
+	if err != nil {
+		panic("force flag not found")
+	}
+
+	// parsing image arguments
+	imgRef, err := parseReference(args[0])
+	if err != nil {
+		return err
+	}
+
+	// retrieving image store
 	store, err := containersStore()
 	if err != nil {
-		return
+		logrus.Error("failed to retrieve container store: %v", err)
+		return nil
 	}
 
-	imgRef, err := parseReference(imgRefStr)
-	if err != nil {
-		return
+	logrus.Debugf("unmounting %q...", imgRef)
+	if err := umount(store, imgRef, force); err != nil {
+		logrus.Error("failed to unmount %q: %v", args[0], err)
+		os.Exit(1)
 	}
+	logrus.Infof("%q successfully unmounted.", args[0])
 
-	_, err = store.UnmountImage(imgRef.String(), force)
-	if err != nil {
-		return
-	}
-	logrus.Infof("%q successfully unmounted.", imgRef)
+	return nil
+}
 
-	return
+func umount(store storage.Store, imgRef reference.Reference, force bool) error {
+	_, err := store.UnmountImage(imgRef.String(), force)
+	return err
 }

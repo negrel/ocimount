@@ -5,9 +5,9 @@ import (
 	"io/fs"
 	"strings"
 
+	"github.com/containers/image/v5/docker/reference"
 	"github.com/containers/storage"
 	"github.com/containers/storage/types"
-	"github.com/docker/distribution/reference"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
 )
