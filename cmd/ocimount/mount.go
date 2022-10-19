@@ -33,6 +33,12 @@ func runMount(cmd *cobra.Command, args []string) (err error) {
 		return errors.New("expecting exactly one argument: an OCI/Docker image reference")
 	}
 
+	// getting flags
+	bind, err := cmd.Flags().GetString("bind")
+	if err != nil {
+		return
+	}
+
 	// parsing image arguments
 	imgRef, err := parseReference(args[0])
 	if err != nil {
@@ -68,9 +74,40 @@ func runMount(cmd *cobra.Command, args []string) (err error) {
 	logrus.Infof("%q successfully mounted at %q.", imgRef, mountpoint)
 	fmt.Println(mountpoint)
 
+	// bind mount if necessary
+	if bind != "" {
+		logrus.Debug("binding %q to %q...", mountpoint, bind)
+
+		err = mountBind(mountpoint, bind)
+		if err != nil {
+			logrus.Errorf("failed to bind mount %q to %q: %v", mountpoint, bind, err)
+			logrus.Debug("cleaning up previous mount...")
+			err = umount(store, imgRef, true)
+			if err != nil {
+				logrus.Debug("failed to clean up previous mount: %v", err)
+			} else {
+				logrus.Debug("previous mount successfully cleaned up.")
+			}
+
+			os.Exit(1)
+		}
+
+		logrus.Debugf("%q successfully bind mounted to %q.", imgRef, bind)
+	}
+
 	return
+
 }
 
 func mount(store storage.Store, imgRef reference.Reference) (mountpoint string, err error) {
 	return store.MountImage(imgRef.String(), []string{}, "")
+}
+
+func mountBind(bind, to string) error {
+	return stormount.Mount(bind, to, "", "rbind,rslave")
+}
+
+func umount(store storage.Store, imgRef reference.Reference, force bool) error {
+	_, err := store.UnmountImage(imgRef.String(), force)
+	return err
 }
