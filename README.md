@@ -37,6 +37,8 @@ INFO[0000] "docker.io/library/archlinux:latest" successfully mounted at "/var/ho
 # Mountpoint is always print to stdout.
 ```
 
+You can then unmount the image using `umount` command.
+
 ## Contributing
 
 If you want to contribute to `ocimount` to add a feature or improve the code contact
