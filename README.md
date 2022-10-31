@@ -39,6 +39,13 @@ INFO[0000] "docker.io/library/archlinux:latest" successfully mounted at "/var/ho
 
 You can then unmount the image using `umount` command.
 
+> **NOTE**: Checks the `--overlay` and `--bind` flags to mount an image as writable and to a custom mountpoint.
+
+### Testing
+
+This code is widely untested, nevertheless it *should* be harmless as we're only reading from the container store
+and performing some `mount` syscall.
+
 ## Contributing
 
 If you want to contribute to `ocimount` to add a feature or improve the code contact
