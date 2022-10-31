@@ -1,8 +1,6 @@
 package ocimount
 
 import (
-	"errors"
-	"io/fs"
 	"strings"
 
 	"github.com/containers/image/v5/docker/reference"
@@ -30,15 +28,7 @@ func containersStore() (storage.Store, error) {
 		}
 	}
 
-	store, err := storage.GetStore(storeOptions)
-	if err != nil {
-		if errors.Is(err, fs.ErrPermission) {
-			logrus.Info("failed to get store, trying again in unshare mode.")
-
-		}
-	}
-
-	return store, err
+	return storage.GetStore(storeOptions)
 }
 
 func parseReference(raw string) (ref reference.Reference, err error) {

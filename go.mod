@@ -3,6 +3,7 @@ module github.com/negrel/ocimount
 go 1.19
 
 require (
+	github.com/containers/buildah v1.28.0
 	github.com/containers/image/v5 v5.23.0
 	github.com/containers/storage v1.43.0
 	github.com/sirupsen/logrus v1.9.0
@@ -25,7 +26,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.15.11 // indirect
-	github.com/klauspost/pgzip v1.2.5 // indirect
+	github.com/klauspost/pgzip v1.2.6-0.20220930104621-17e8dac29df8 // indirect
 	github.com/mattn/go-shellwords v1.0.12 // indirect
 	github.com/mistifyio/go-zfs/v3 v3.0.0 // indirect
 	github.com/moby/sys/mountinfo v0.6.2 // indirect
